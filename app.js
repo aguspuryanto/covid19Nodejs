@@ -7,7 +7,10 @@ const hbs = require('hbs');
 //use bodyParser middleware
 const bodyParser = require('body-parser');
 // const http = require('http');
-// const axios = require('axios')
+// const agent = new http.Agent({ keepAlive: true });
+// const https = require('https');
+const axios = require('axios')
+// const request = require('request');
 const app = express()
 
 //set dynamic views file
@@ -27,34 +30,58 @@ app.use(express.static('public'));
 
 //route untuk halaman home
 app.get('/',(req, res) => {
-
     // var promise1 = new Promise(function(resolve, reject) {
-    //     resolve('Promise OK');
+    //     // resolve('Promise OK');
+    //     https.get('https://api.kawalcorona.com/indonesia/provinsi/', (resp) => {
+    //         // resolve(res.data)
+    //         let data = '';
+    //         // A chunk of data has been recieved.
+    //         resp.on('data', (chunk) => {
+    //             data += chunk;
+    //         });
+    //         // The whole response has been received. Print out the result.
+    //         resp.on('end', () => {
+    //             console.log(data);
+    //             resolve(data)
+    //         });
+    //     }).on("error", (err) => {
+    //         console.log("Error: " + err.message);
+    //         reject(err)
+    //     });
     // });
 
     // promise1.then(data => {
     //     console.log(data);
+    //     res.render('index', {
+    //         dataid: data
+    //     }); // render file index.hbs
     // }).catch(error => {
     //     console.log(error)
-    // })
+    // });
 
-    // const getBreeds = () => {
-    //     try {
-    //       return axios.get('https://api.kawalcorona.com/indonesia/provinsi/')
-    //     } catch (error) {
-    //       console.error(error)
-    //     }
-    // }
+    axios.get('https://api.kawalcorona.com/indonesia/provinsi/')
+    .then(response => {
+        // console.log(response.data);
+        // response.data.forEach(el => {
+            
+        // });
 
-    // const countBreeds = async () => {
-    //     const breeds = getBreeds()      
-    //     // if (breeds) {
-    //       return breeds
-    //     // }
-    // }
-    // console.log( countBreeds() );
+        let sumConfirmed = response.data.map(o => o.attributes.Kasus_Posi).reduce((a, c) => { return a + c });
+        let sumRecovered = response.data.map(o => o.attributes.Kasus_Semb).reduce((a, c) => { return a + c });
+        let sumDeaths = response.data.map(o => o.attributes.Kasus_Meni).reduce((a, c) => { return a + c });
 
-    res.render('index'); // render file index.hbs
+        res.render('demo', {
+            dataid: response.data,
+            sumConfirmed: sumConfirmed,
+            sumRecovered: sumRecovered,
+            sumDeaths: sumDeaths,
+        }); // render file index.hbs
+    })
+    .catch(error => {
+        console.log(error);
+    });
+
+    // res.render('index'); // render file index.hbs
     // res.render('index',{
     //     name : "M Fikri"
     // });
