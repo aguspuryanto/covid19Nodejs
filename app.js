@@ -6,6 +6,8 @@ const express = require('express')
 const hbs = require('hbs');
 //use bodyParser middleware
 const bodyParser = require('body-parser');
+// const http = require('http');
+// const axios = require('axios')
 const app = express()
 
 //set dynamic views file
@@ -25,6 +27,33 @@ app.use(express.static('public'));
 
 //route untuk halaman home
 app.get('/',(req, res) => {
+
+    // var promise1 = new Promise(function(resolve, reject) {
+    //     resolve('Promise OK');
+    // });
+
+    // promise1.then(data => {
+    //     console.log(data);
+    // }).catch(error => {
+    //     console.log(error)
+    // })
+
+    // const getBreeds = () => {
+    //     try {
+    //       return axios.get('https://api.kawalcorona.com/indonesia/provinsi/')
+    //     } catch (error) {
+    //       console.error(error)
+    //     }
+    // }
+
+    // const countBreeds = async () => {
+    //     const breeds = getBreeds()      
+    //     // if (breeds) {
+    //       return breeds
+    //     // }
+    // }
+    // console.log( countBreeds() );
+
     res.render('index'); // render file index.hbs
     // res.render('index',{
     //     name : "M Fikri"
