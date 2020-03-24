@@ -1,0 +1,145 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <title>Starter Template · Bootstrap</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.4/examples/starter-template/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- Favicons -->
+    <meta name="theme-color" content="#563d7c">
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="starter-template.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <!-- <a class="navbar-brand" href="#">Navbar</a> -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="/">Indonesia<span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/global">Semua Negara</a>
+              </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main role="main" class="container">
+
+    <div class="starter-template">
+        <h1>Data Kasus Coronavirus di Indonesia</h1>
+        <p class="lead">Last Update :<span id="lastUpdate"></span></p>
+        <div class="container">
+            <div class="row"> 
+                <div class="col-lg-4 col-sm-6 col-md-6 text-center">
+                    <span class="counter" id="confirmed"></span>
+                    <h5>Confirmed</h5>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-md-6 text-center">
+                    <span class="counter" id="recovered"></span>
+                    <h5>Recovered</h5>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-md-6 text-center">
+                    <span class="counter" id="deaths"></span>
+                    <h5>Deaths</h5>
+                </div>             
+            </div>
+        </div>
+
+        <section>
+            <div class="row">
+                <table id="myTB" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">PROVINSI</th>
+                        <th scope="col">POSITIF</th>
+                        <th scope="col">SEMBUH</th>
+                        <th scope="col">MENINGGAL</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    </main><!-- /.container -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script>
+function doTheThing() {
+    // https://api.kawalcorona.com/
+    return new Promise((resolve, reject) => {
+        $.ajax({
+        url: "https://api.kawalcorona.com/indonesia/provinsi/",
+        success: function(data) {
+            resolve(data)
+        },
+        error: function(error) {
+            reject(error)
+        },
+        })
+    })
+}
+
+doTheThing().then(data => {
+    var table = "";
+    Object.keys(data).forEach(function(xitem, i) {
+        // console.log("Country_Region", data[i]['attributes']['Country_Region']);
+        var deathsRate = (data[i]['attributes']['Kasus_Meni']/data[i]['attributes']['Kasus_Posi'])*100 || 0;
+        var recoveredRate = (100-deathsRate) || 0;
+        table += "<tr><th scope=\"row\">"+ (i+1) +"</th><td>"+ data[i]['attributes']['Provinsi'] +" </td><td>"+ Number(data[i]['attributes']['Kasus_Posi']).toLocaleString() +"</td><td>"+ Number(data[i]['attributes']['Kasus_Semb']).toLocaleString() +" ("+recoveredRate.toFixed(2)+"%)</td><td>"+ Number(data[i]['attributes']['Kasus_Meni']).toLocaleString() +" ("+deathsRate.toFixed(2)+"%)</td></tr>";
+    });
+
+    document.getElementById("myTB").getElementsByTagName('tbody')[0].innerHTML = table;
+    // doSomethingElse()
+
+    let sumConfirmed = data.map(o => o.attributes.Kasus_Posi).reduce((a, c) => { return a + c });
+    let sumRecovered = data.map(o => o.attributes.Kasus_Semb).reduce((a, c) => { return a + c });
+    let sumDeaths = data.map(o => o.attributes.Kasus_Meni).reduce((a, c) => { return a + c });
+    document.getElementById("confirmed").innerHTML = sumConfirmed.toLocaleString();
+    document.getElementById("recovered").innerHTML = sumRecovered.toLocaleString();
+    document.getElementById("deaths").innerHTML = sumDeaths.toLocaleString();
+
+    var today = new Date();
+    document.getElementById("lastUpdate").innerHTML = moment(today).format('LLL');
+    
+})
+.catch(error => {
+    // console.log(error)
+})
+</script>
+</body>
+</html>

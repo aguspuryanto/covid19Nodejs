@@ -1,0 +1,20 @@
+body {
+  padding-top: 5rem;
+}
+.starter-template {
+  padding: 3rem 1.5rem;
+  /* text-align: center; */
+}
+
+section {
+    padding-top: 20px;
+}
+
+.counter {
+    font-size: 60px;
+    line-height: 60px;
+    font-weight: 700;
+    line-height: 70px;
+    margin: 10px 0px;
+    color: #635CDB;
+}
